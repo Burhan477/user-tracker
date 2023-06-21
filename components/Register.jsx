@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import Link from "next/link";
-// import { RegisterUser } from "../Slices/userSlice";
-// import { useDispatch } from "react-redux";
+import { RegisterUser } from "../Slices/AuthSlice";
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 // import { useAppDispatch } from '../Store/Hooks';
 import { useForm } from "react-hook-form";
@@ -38,15 +38,15 @@ const validationSchema = Yup.object().shape({
 const Register = ({ type, setType }) => {
   const formOptions = { resolver: yupResolver(validationSchema) };
   const [formData, setFormData] = useReducer(formReducer, {});
-  // const router = useRouter();
-  //   const dispatch = useDispatch();
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const { register, handleSubmit, reset, formState } = useForm(formOptions);
   const { errors } = formState;
 
-  const onSubmit = (e) => {
+  const onSubmit = () => {
     // e.preventDefault();
-    // dispatch(RegisterUser(formData));
+    dispatch(RegisterUser(formData));
     // router.push('/home')
     console.log("formdata", formData);
   };

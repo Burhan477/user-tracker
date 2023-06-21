@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import Link from "next/link";
-// import { loginUser } from "../Slices/userSlice";
-// import { useDispatch } from "react-redux";
+import { loginUser } from "../Slices/AuthSlice";
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,41 +15,26 @@ const formReducer = (state, event) => {
 };
 
 const validationSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required"),
-  // firstName: Yup.string().required("First Name is required"),
-  // lastName: Yup.string().required("Last name is required"),
-  // dob: Yup.string()
-  //   .required("Date of Birth is required")
-  //   .matches(
-  //     /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/,
-  //     "Date of Birth must be a valid date in the format YYYY-MM-DD"
-  //   ),
   email: Yup.string().required("Email is required").email("Email is invalid"),
   password: Yup.string()
     .required("Password is required")
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("Confirm Password is required"),
-  // acceptTerms: Yup.bool().oneOf([true], "Accept Ts & Cs is required"),
 });
 
 const Login = ({ type, setType }) => {
   const formOptions = { resolver: yupResolver(validationSchema) };
-
   const [formData, setFormData] = useReducer(formReducer, {});
   const router = useRouter();
-  //   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const { register, handleSubmit, reset, formState } = useForm(formOptions);
   const { errors } = formState;
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    // dispatch(loginUser(formData));
+  const onSubmit = () => {
+    console.log("formdata", formData);
+    dispatch(loginUser(formData));
     router.push("/home");
-    console.log("login formdata", formData);
   };
 
   return (
@@ -111,14 +96,19 @@ const Login = ({ type, setType }) => {
                   {errors.password?.message}
                 </div>
               </div>
+
               <Link
                 href="/forget"
                 className="text-xs text-blue-600 hover:underline"
               >
                 Forget Password?
               </Link>
+
               <div className="mt-2">
-                <button className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
+                <button
+                  onClick={() => console.log("aayu")}
+                  className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
+                >
                   Login
                 </button>
               </div>
