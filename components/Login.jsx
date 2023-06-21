@@ -3,6 +3,9 @@ import Link from "next/link";
 // import { loginUser } from "../Slices/userSlice";
 // import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 
 const formReducer = (state, event) => {
   return {
@@ -11,12 +14,38 @@ const formReducer = (state, event) => {
   };
 };
 
+const validationSchema = Yup.object().shape({
+  username: Yup.string().required("Username is required"),
+  // firstName: Yup.string().required("First Name is required"),
+  // lastName: Yup.string().required("Last name is required"),
+  // dob: Yup.string()
+  //   .required("Date of Birth is required")
+  //   .matches(
+  //     /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/,
+  //     "Date of Birth must be a valid date in the format YYYY-MM-DD"
+  //   ),
+  email: Yup.string().required("Email is required").email("Email is invalid"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Confirm Password is required"),
+  // acceptTerms: Yup.bool().oneOf([true], "Accept Ts & Cs is required"),
+});
+
 const Login = ({ type, setType }) => {
+  const formOptions = { resolver: yupResolver(validationSchema) };
+
   const [formData, setFormData] = useReducer(formReducer, {});
   const router = useRouter();
   //   const dispatch = useDispatch();
 
-  const handelSubmit = (e) => {
+  const { register, handleSubmit, reset, formState } = useForm(formOptions);
+  const { errors } = formState;
+
+  const onSubmit = (e) => {
     e.preventDefault();
     // dispatch(loginUser(formData));
     router.push("/home");
@@ -31,7 +60,7 @@ const Login = ({ type, setType }) => {
             <h1 className="text-3xl font-bold text-center text-gray-700">
               Login
             </h1>
-            <form onSubmit={handelSubmit} className="mt-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
               <div className="mb-4">
                 <label
                   htmlFor="email"
@@ -40,11 +69,23 @@ const Login = ({ type, setType }) => {
                   Email
                 </label>
                 <input
+                  {...register("email")}
+                  className={`form-control block w-full 
+                  px-4 py-2 mt-2 text-gray-700
+                  bg-white border rounded-md 
+                  focus:border-gray-400
+                  focus:ring-gray-300 
+                  focus:outline-none 
+                  focus:ring focus:ring-opacity-40 ${
+                    errors.email ? "is-invalid" : ""
+                  }`}
                   type="email"
                   onChange={setFormData}
                   name="email"
-                  className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md focus:border-gray-400 focus:ring-gray-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 />
+                <div className="invalid-feedback" style={{ direction: "rtl" }}>
+                  {errors.email?.message}
+                </div>
               </div>
               <div className="mb-2">
                 <label
@@ -54,11 +95,21 @@ const Login = ({ type, setType }) => {
                   Password
                 </label>
                 <input
+                  {...register("password")}
+                  className={`form-control block w-full 
+                  px-4 py-2 mt-2 text-gray-700 
+                  bg-white border rounded-md 
+                  focus:border-gray-400
+                  focus:ring-gray-300 
+                  focus:outline-none focus:ring 
+                  focus:ring-opacity-40${errors.password ? "is-invalid" : ""}`}
                   onChange={setFormData}
                   name="password"
                   type="password"
-                  className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md focus:border-gray-400 focus:ring-gray-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 />
+                <div className="invalid-feedback" style={{ direction: "rtl" }}>
+                  {errors.password?.message}
+                </div>
               </div>
               <Link
                 href="/forget"
