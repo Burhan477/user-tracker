@@ -47,7 +47,7 @@ const Register = ({ type, setType }) => {
   const onSubmit = () => {
     // e.preventDefault();
     dispatch(RegisterUser(formData));
-    // router.push('/home')
+    router.push("/home");
     console.log("formdata", formData);
   };
 

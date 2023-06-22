@@ -1,52 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "../styles/Home.module.css";
+import ProtectedRoute from "../common/ProtectedRoute";
+import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutSuccess } from "../Slices/AuthSlice";
+import Dashboard from "../components/Dashboard";
 
-const home = () => {
+const Home = () => {
+  // const router = useRouter();
+  // const isLoggedIn = useSelector((state) => state.data.isLoggedIn);
+  // const dispatch = useDispatch();
+
+  // const Logout = () => {
+  //   dispatch(logoutSuccess());
+  //   router.replace("/"); // Redirect to login page if not logged in
+  //   console.log("isLoggedIn", isLoggedIn);
+  // };
+
   return (
-    <div>
-      <main className={styles.main}>
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
+    <>
+      <ProtectedRoute>
+        <div>
+          {/* <button
+            type="button"
+            onClick={() => {
+              Logout();
+            }}
           >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+            home
+          </button> */}
+          <Dashboard />
         </div>
-      </main>
-    </div>
+      </ProtectedRoute>
+    </>
   );
 };
 
-export default home;
+export default Home;

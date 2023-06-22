@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { loginUserAPI, RegisterUserAPI } from "../Service/AuthService";
 
 const authSlice = createSlice({
-  name: "auth",
+  name: "data",
   initialState: {
     // Define your initial state here
     user: null,
@@ -11,8 +11,14 @@ const authSlice = createSlice({
   },
   reducers: {
     loginSuccess: (state, action) => {
-      state.user = action.payload;
+      // state.user = action.payload;
       state.isLoggedIn = true;
+      state.error = null;
+    },
+    logoutSuccess: (state, action) => {
+      console.log("in logout action");
+      // state.user = action.payload;
+      state.isLoggedIn = false;
       state.error = null;
     },
     loginFailure: (state, action) => {
@@ -44,7 +50,7 @@ const authSlice = createSlice({
       state.loading = false;
     },
     setUser(state, action) {
-      state.data = action.payload;
+      state.user = action.payload;
       state.errorMsg = "";
     },
     setProfile(state, action) {
@@ -80,6 +86,7 @@ export const loginUser = (data) => async (dispatch) => {
   try {
     await loginUserAPI(data).then((res) => {
       dispatch(setUser(res.data.user));
+      dispatch(loginSuccess());
       localStorage.setItem("user", JSON.stringify(res.data.user));
       // window.location.replace('/Home')
     });
@@ -103,6 +110,7 @@ export const RegisterUser = (data) => async (dispatch) => {
 
 export const {
   loginSuccess,
+  logoutSuccess,
   loginFailure,
   registerSuccess,
   registerFailure,

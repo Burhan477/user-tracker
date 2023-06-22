@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import authSlice from "../Slices/AuthSlice";
 
 const rootReducer = combineReducers({
-  user: authSlice,
+  data: authSlice,
+  // tata: authSlice,
 });
 export default rootReducer;
