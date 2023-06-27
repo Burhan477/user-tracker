@@ -1,13 +1,75 @@
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useReducer } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { viewProfile, UpdateProfile } from "../Slices/AuthSlice";
+import { useDispatch, useSelector } from "react-redux";
+
+const formReducer = (state, event) => {
+  return {
+    ...state,
+    [event.target.name]: event.target.value,
+  };
+};
+
+const validationSchema = Yup.object().shape({
+  firstname: Yup.string().required("firstname is required"),
+  middelname: Yup.string().required("middelname is required"),
+  lastname: Yup.string().required("lastname is required"),
+  email: Yup.string().email("Email is invalid").required("Email is required"),
+  phone: Yup.string().required("phone is required"),
+  gender: Yup.string().required("gender is required"),
+  dob: Yup.string().required("dob is required"),
+  marritialStatus: Yup.string().required("marritialStatus is required"),
+  address: Yup.string().required("address is required"),
+  city: Yup.string().required("city is required"),
+  state: Yup.string().required("state is required"),
+  pincode: Yup.string().required("pincode is required"),
+  qualification: Yup.string().required("qualification is required"),
+  degree: Yup.string().required("degree is required"),
+  passoutyear: Yup.string().required("passoutyear is required"),
+  company: Yup.string().required("company is required"),
+  jobtitile: Yup.string().required("jobtitile is required"),
+  skill: Yup.string().required("skill is required"),
+  summary: Yup.string().required("summary is required"),
+  experiance: Yup.string().required("experiance is required"),
+  // password: Yup.string()
+  //   .required("Password is required")
+  //   .min(6, "Password must be at least 6 characters"),
+  // confirmPassword: Yup.string()
+  //   .required("confirm Password is required")
+  //   .oneOf([Yup.ref("password"), null], "Password must match"),
+  // acceptTerms: Yup.bool().oneOf([true], "Accept Ts & Cs is required"),
+});
 
 const Profile = ({ handleClose }) => {
+  const [formData, setFormData] = useReducer(formReducer, {});
+  const formOptions = { resolver: yupResolver(validationSchema) };
+  const UserId = useSelector((state) => state.data.user._id);
+  const ProfileDetails = useSelector((state) => state.data.profile);
+
+  const { register, handleSubmit, reset, formState } = useForm(formOptions);
+  const { errors } = formState;
+
+  // console.log("ProfileDetails", ProfileDetails.email);
+  const dispatch = useDispatch();
+  const config = localStorage.getItem("user");
+  useEffect(() => {
+    dispatch(viewProfile(UserId));
+  }, []);
+
   const router = useRouter();
   const onBack = () => {
     router.push("/home");
     console.log("goto back");
     //    console.log("formdata", formData);
     //    dispatch(loginUser(formData));
+  };
+
+  const onSubmit = () => {
+    dispatch(UpdateProfile({ id: UserId, formData }));
+    console.log("formdata", formData);
   };
 
   return (
@@ -48,7 +110,7 @@ const Profile = ({ handleClose }) => {
               </div>
               {/* <!-- Modal body --> */}
               <div class="p-6 space-y-6">
-                <form>
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <div class="grid gap-6 mb-2 md:grid-cols-3">
                     <div>
                       <label
@@ -58,6 +120,10 @@ const Profile = ({ handleClose }) => {
                         First name
                       </label>
                       <input
+                        {...register("firstname")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.firstname}
+                        // value={ProfileDetails.firstname}
                         type="text"
                         id="firstname"
                         name="firstname"
@@ -75,6 +141,9 @@ const Profile = ({ handleClose }) => {
                         Middel name
                       </label>
                       <input
+                        {...register("middelname")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.middelname}
                         type="text"
                         id="middelname"
                         name="middelname"
@@ -92,6 +161,9 @@ const Profile = ({ handleClose }) => {
                         Last name
                       </label>
                       <input
+                        {...register("lastname")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.lastname}
                         type="text"
                         id="lastname"
                         name="lastname"
@@ -109,6 +181,9 @@ const Profile = ({ handleClose }) => {
                         Email
                       </label>
                       <input
+                        {...register("email")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.email}
                         type="email"
                         id="email"
                         name="email"
@@ -126,12 +201,15 @@ const Profile = ({ handleClose }) => {
                         Phone number
                       </label>
                       <input
+                        {...register("phone")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.phone}
                         type="tel"
                         id="phone"
                         name="phone"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Phone Number"
-                        pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
+                        // pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
                         required
                       />
                     </div>
@@ -144,6 +222,8 @@ const Profile = ({ handleClose }) => {
                         Website URL
                       </label>
                       <input
+                       {...register("username")}
+                      onChange={setFormData}
                         type="url"
                         id="website"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -160,6 +240,9 @@ const Profile = ({ handleClose }) => {
                         Gender
                       </label>
                       <input
+                        {...register("gender")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.gender}
                         type="text"
                         id="gender"
                         name="gender"
@@ -177,6 +260,9 @@ const Profile = ({ handleClose }) => {
                         Date of Birth
                       </label>
                       <input
+                        {...register("dob")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.dob}
                         type="date"
                         id="dob"
                         name="dob"
@@ -195,6 +281,9 @@ const Profile = ({ handleClose }) => {
                         Marritial Status
                       </label>
                       <input
+                        {...register("marritialStatus")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.marritialStatus}
                         type="text"
                         id="marritialStatus"
                         name="marritialStatus"
@@ -213,6 +302,9 @@ const Profile = ({ handleClose }) => {
                         Address
                       </label>
                       <input
+                        {...register("address")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.address}
                         type="text"
                         id="address"
                         name="address"
@@ -231,6 +323,9 @@ const Profile = ({ handleClose }) => {
                         City
                       </label>
                       <input
+                        {...register("city")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.city}
                         type="text"
                         id="city"
                         name="city"
@@ -249,6 +344,9 @@ const Profile = ({ handleClose }) => {
                         State
                       </label>
                       <input
+                        {...register("state")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.state}
                         type="text"
                         id="state"
                         name="state"
@@ -267,6 +365,9 @@ const Profile = ({ handleClose }) => {
                         Pincode
                       </label>
                       <input
+                        {...register("pincode")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.pincode}
                         type="text"
                         id="pincode"
                         name="pincode"
@@ -288,12 +389,15 @@ const Profile = ({ handleClose }) => {
                   <div class="grid gap-6 mb-2 md:grid-cols-2">
                     <div>
                       <label
-                        for="first_name"
+                        for="qualification"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Qualification
                       </label>
                       <input
+                        {...register("qualification")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.qualification}
                         type="text"
                         id="qualification"
                         name="qualification"
@@ -304,12 +408,15 @@ const Profile = ({ handleClose }) => {
                     </div>
                     <div>
                       <label
-                        for="first_name"
+                        for="degree"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Degree
                       </label>
                       <input
+                        {...register("degree")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.degree}
                         type="text"
                         id="degree"
                         name="degree"
@@ -320,12 +427,15 @@ const Profile = ({ handleClose }) => {
                     </div>
                     <div>
                       <label
-                        for="first_name"
+                        for="passoutyear"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Pass-out Year
                       </label>
                       <input
+                        {...register("passoutyear")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.passoutyear}
                         type="text"
                         id="passoutyear"
                         name="passoutyear"
@@ -342,8 +452,12 @@ const Profile = ({ handleClose }) => {
                         Company
                       </label>
                       <input
+                        {...register("company")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.company}
                         type="text"
                         id="company"
+                        name="company"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Flowbite"
                         required
@@ -361,12 +475,15 @@ const Profile = ({ handleClose }) => {
                   <div class="grid gap-6 mb-2 md:grid-cols-2">
                     <div>
                       <label
-                        for="first_name"
+                        for="jobtitile"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Job Title
                       </label>
                       <input
+                        {...register("jobtitile")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.jobtitile}
                         type="text"
                         id="jobtitile"
                         name="jobtitile"
@@ -384,6 +501,9 @@ const Profile = ({ handleClose }) => {
                         Skill
                       </label>
                       <input
+                        {...register("skill")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.skill}
                         type="text"
                         id="skill"
                         name="skill"
@@ -401,6 +521,9 @@ const Profile = ({ handleClose }) => {
                         Summary
                       </label>
                       <input
+                        {...register("summary")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.summary}
                         type="text"
                         id="summary"
                         name="summary"
@@ -418,6 +541,9 @@ const Profile = ({ handleClose }) => {
                         Experiance
                       </label>
                       <input
+                        {...register("experiance")}
+                        onChange={setFormData}
+                        defaultValue={ProfileDetails.experiance}
                         type="text"
                         id="experiance"
                         name="experiance"
@@ -428,9 +554,11 @@ const Profile = ({ handleClose }) => {
                     </div>
                   </div>
 
-                  <div class="flex items-start mb-6">
+                  {/* <div class="flex items-start mb-6">
                     <div class="flex items-center h-5">
                       <input
+                       {...register("username")}
+                        // onChange={setFormData}
                         id="remember"
                         type="checkbox"
                         value=""
@@ -451,9 +579,9 @@ const Profile = ({ handleClose }) => {
                       </a>
                       .
                     </label>
-                  </div>
+                  </div> */}
 
-                  <div class="grid gap-6 mb-2 md:grid-cols-2">
+                  {/* <div class="grid gap-6 mb-2 md:grid-cols-2">
                     <div class="mb-6">
                       <label
                         for="password"
@@ -462,6 +590,8 @@ const Profile = ({ handleClose }) => {
                         Password
                       </label>
                       <input
+                        {...register("username")}
+                        onChange={setFormData}
                         type="password"
                         id="password"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -469,6 +599,7 @@ const Profile = ({ handleClose }) => {
                         required
                       />
                     </div>
+
                     <div class="mb-6">
                       <label
                         for="confirm_password"
@@ -477,14 +608,17 @@ const Profile = ({ handleClose }) => {
                         Confirm password
                       </label>
                       <input
+                        {...register("username")}
+                        onChange={setFormData}
                         type="password"
-                        id="confirm_password"
+                        id="confirmPassword"
+                        name="confirmPassword"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="•••••••••"
                         required
                       />
                     </div>
-                  </div>
+                  </div> */}
 
                   <button
                     type="submit"

@@ -3,6 +3,9 @@ import Link from "next/link";
 import { useState } from "react";
 import Index from "./index";
 import Profile from "./Profile";
+import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutSuccess } from "../Slices/AuthSlice";
 
 export default function Header() {
   //   const [navbar, setNavbar] = useState(false);
@@ -16,6 +19,16 @@ export default function Header() {
   //     setOpen(false);
   //   };
 
+  const router = useRouter();
+  const isLoggedIn = useSelector((state) => state.data.isLoggedIn);
+  const dispatch = useDispatch();
+
+  const Logout = () => {
+    dispatch(logoutSuccess());
+    router.push("/"); // Redirect to login page if not logged in
+    console.log("isLoggedIn", isLoggedIn);
+  };
+
   return (
     <div>
       <nav className="w-full bg-gray-800 shadow">
@@ -27,11 +40,25 @@ export default function Header() {
               </a>
             </div>
           </div>
-          <div>
-            <div className="flex-1 justify-self-center">
+          <div className="flex p-1">
+            <div className="flex justify-self-center">
               <ul className="items-center justify-center">
                 <li className="text-white">
                   <Link href="/profile">Profile</Link>
+                </li>
+              </ul>
+            </div>
+            <div className="flex justify-self-center ml-3">
+              <ul className="items-center justify-center">
+                <li className="text-white">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      Logout();
+                    }}
+                  >
+                    log_out
+                  </button>
                 </li>
               </ul>
             </div>

@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUserAPI, RegisterUserAPI } from "../Service/AuthService";
+import {
+  loginUserAPI,
+  RegisterUserAPI,
+  GetUserAPI,
+  UpdateUserAPI,
+} from "../Service/AuthService";
 
 const authSlice = createSlice({
   name: "data",
@@ -17,7 +22,7 @@ const authSlice = createSlice({
     },
     logoutSuccess: (state, action) => {
       console.log("in logout action");
-      // state.user = action.payload;
+      state.user = {};
       state.isLoggedIn = false;
       state.error = null;
     },
@@ -37,18 +42,6 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
     //--
-    restoreState(state) {
-      state.data = {};
-      state.loading = false;
-      state.successMsg = "";
-      state.errorMsg = "";
-    },
-    setLoading(state) {
-      state.loading = true;
-    },
-    removeLoading(state) {
-      state.loading = false;
-    },
     setUser(state, action) {
       state.user = action.payload;
       state.errorMsg = "";
@@ -57,26 +50,12 @@ const authSlice = createSlice({
       state.profile = action.payload;
       state.errorMsg = "";
     },
+    setUpdateProfile(state, action) {
+      state.UpdateProfile = action.payload;
+      state.errorMsg = "";
+    },
     setUserError(state, action) {
       state.errorMsg = action.payload;
-    },
-    setUserSuccess(state, action) {
-      state.successMsg = action.payload;
-    },
-    removeUserError(state) {
-      state.errorMsg = "";
-    },
-    removeMsg(state) {
-      state.successMsg = "";
-      state.errorMsg = "";
-    },
-    setSuccessTag(state, action) {
-      state.errorMsg = "";
-      state.successTag = action.payload;
-    },
-    setErrorTag(state, action) {
-      state.successMsg = "";
-      state.errorTag = action.payload;
     },
   },
 });
@@ -87,8 +66,7 @@ export const loginUser = (data) => async (dispatch) => {
     await loginUserAPI(data).then((res) => {
       dispatch(setUser(res.data.user));
       dispatch(loginSuccess());
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      // window.location.replace('/Home')
+      localStorage.setItem("token", res.data.user.token);
     });
   } catch (error) {
     dispatch(setUserError(error));
@@ -99,9 +77,39 @@ export const RegisterUser = (data) => async (dispatch) => {
   // dispatch(setUser({ mess: 'mess' }))
   try {
     await RegisterUserAPI(data).then((res) => {
-      dispatch(setUser(res.data.data));
+      dispatch(setUser(res.data.user));
+    });
+  } catch (error) {
+    dispatch(setUserError(error));
+  }
+};
+
+export const viewProfile = (data) => async (dispatch) => {
+  // dispatch(setUser({ mess: 'mess' }))
+  try {
+    // const token = JSON.parse(localStorage.getItem("user"));
+    // console.log("token", token["token"]);
+    await GetUserAPI(data).then((res) => {
+      // dispatch(setUser(res.data.user));
+      dispatch(setProfile(res.data.user));
+
       // window.location.replace('/home')
-      usen;
+    });
+  } catch (error) {
+    dispatch(setUserError(error));
+  }
+};
+
+export const UpdateProfile = (data) => async (dispatch) => {
+  // dispatch(setUser({ mess: 'mess' }))
+  try {
+    // const token = JSON.parse(localStorage.getItem("user"));
+    // console.log("token", token["token"]);
+    await UpdateUserAPI(data).then((res) => {
+      // dispatch(setUser(res.data.user));
+      dispatch(setUpdateProfile(res.data.user));
+
+      // window.location.replace('/home')
     });
   } catch (error) {
     dispatch(setUserError(error));
@@ -114,17 +122,10 @@ export const {
   loginFailure,
   registerSuccess,
   registerFailure,
-  restoreState,
-  setLoading,
-  removeLoading,
   setUser,
   setProfile,
+  setUpdateProfile,
   setUserError,
-  setUserSuccess,
-  removeUserError,
-  removeMsg,
-  setSuccessTag,
-  setErrorTag,
 } = authSlice.actions;
 
 export default authSlice.reducer;
